@@ -1,0 +1,472 @@
+{
+  "users": [
+    {
+      "id": 6,
+      "username": "kichaa",
+      "password": "12345678",
+      "role": "Student",
+      "name": "SOMA",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 7,
+      "username": "maguire",
+      "password": "19261926",
+      "role": "Student",
+      "name": "peter parker",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 8,
+      "username": "doom",
+      "password": "12345678",
+      "role": "Student",
+      "name": "victor von doom",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 9,
+      "username": "MN",
+      "password": "12345678",
+      "role": "Faculty",
+      "name": "MANGAI MAM",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 10,
+      "username": "ra",
+      "password": "12345678",
+      "role": "Student",
+      "name": "yugan raja",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 2,
+      "username": "faculty",
+      "password": "Faculty@123",
+      "role": "Faculty",
+      "name": "Dr. Priya Nair",
+      "email": "priya.nair@college.edu",
+      "status": "Active",
+      "createdVia": "seed"
+    },
+    {
+      "id": 3,
+      "username": "student",
+      "password": "Student@123",
+      "role": "Student",
+      "name": "Rahul Dev",
+      "email": "rahul.dev@college.edu",
+      "status": "Active",
+      "createdVia": "seed"
+    },
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "Admin@123",
+      "role": "Admin",
+      "name": "velavan",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "seed"
+    },
+    {
+      "id": 4,
+      "username": "liza",
+      "password": "12345678",
+      "role": "Student",
+      "name": "mmkk",
+      "email": "billavel0987@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 5,
+      "username": "mm",
+      "password": "12345678",
+      "role": "Student",
+      "name": "vel",
+      "email": "billavel0987@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 11,
+      "username": "andrew",
+      "password": "12345678",
+      "role": "Student",
+      "name": "spidey",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 7,
+      "username": "peter",
+      "password": "12345",
+      "role": "Student",
+      "name": "spidey",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    }
+  ],
+  "resources": [
+    {
+      "id": 1,
+      "name": "Student Records Database",
+      "sensitivity": "High",
+      "roles": [
+        "Admin",
+        "Faculty"
+      ],
+      "requireTrustedDevice": true,
+      "requireMFA": true
+    },
+    {
+      "id": 2,
+      "name": "Grade Management System",
+      "sensitivity": "High",
+      "roles": [
+        "Admin",
+        "Faculty"
+      ],
+      "requireTrustedDevice": true,
+      "requireMFA": true
+    },
+    {
+      "id": 3,
+      "name": "My Academic Profile",
+      "sensitivity": "Low",
+      "roles": [
+        "Admin",
+        "Faculty",
+        "Student"
+      ],
+      "requireTrustedDevice": false,
+      "requireMFA": false
+    },
+    {
+      "id": 4,
+      "name": "Library Portal",
+      "sensitivity": "Low",
+      "roles": [
+        "Admin",
+        "Faculty",
+        "Student"
+      ],
+      "requireTrustedDevice": false,
+      "requireMFA": false
+    },
+    {
+      "id": 5,
+      "name": "Finance & Admin Console",
+      "sensitivity": "Critical",
+      "roles": [
+        "Admin"
+      ],
+      "requireTrustedDevice": true,
+      "requireMFA": true
+    },
+    {
+      "id": 6,
+      "name": "HR Records",
+      "sensitivity": "Critical",
+      "roles": [
+        "Admin"
+      ],
+      "requireTrustedDevice": true,
+      "requireMFA": true
+    }
+  ],
+  "logs": [
+    {
+      "id": 16,
+      "time": "10/9/2026, 5:48:40 pm",
+      "user": "peter",
+      "role": "Student",
+      "action": "Access request: My Academic Profile",
+      "result": "granted",
+      "detail": "Access scoped to your own records only.",
+      "device": "Trusted",
+      "ip": "10.20.157.125"
+    },
+    {
+      "id": 15,
+      "time": "10/9/2026, 5:48:29 pm",
+      "user": "peter",
+      "role": "Student",
+      "action": "Access request: HR Records",
+      "result": "denied",
+      "detail": "Role \"Student\" is not permitted for this resource. Only Admin may access it.",
+      "device": "Trusted",
+      "ip": "10.20.168.50"
+    },
+    {
+      "id": 14,
+      "time": "10/9/2026, 5:48:21 pm",
+      "user": "peter",
+      "role": "Student",
+      "action": "Access request: Grade Management System",
+      "result": "denied",
+      "detail": "Role \"Student\" is not permitted for this resource. Only Admin, Faculty may access it.",
+      "device": "Trusted",
+      "ip": "10.20.166.237"
+    },
+    {
+      "id": 13,
+      "time": "10/9/2026, 5:48:01 pm",
+      "user": "peter",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.220.48"
+    },
+    {
+      "id": 12,
+      "time": "10/9/2026, 5:47:38 pm",
+      "user": "peter",
+      "role": "Student",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Student — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.87.15"
+    },
+    {
+      "id": 11,
+      "time": "10/9/2026, 12:23:12 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.141.115"
+    },
+    {
+      "id": 10,
+      "time": "10/9/2026, 12:22:48 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Student — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.61.59"
+    },
+    {
+      "id": 9,
+      "time": "10/9/2026, 12:20:51 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Logout",
+      "result": "granted",
+      "detail": "Session expired after 5 minutes of inactivity — access automatically revoked.",
+      "device": "Trusted",
+      "ip": "10.20.151.48"
+    },
+    {
+      "id": 8,
+      "time": "10/9/2026, 12:08:16 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.32.81"
+    },
+    {
+      "id": 7,
+      "time": "10/9/2026, 12:07:48 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Student — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.107.135"
+    },
+    {
+      "id": 6,
+      "time": "10/9/2026, 12:06:12 pm",
+      "user": "D",
+      "role": "Faculty",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Faculty — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.156.113"
+    },
+    {
+      "id": 5,
+      "time": "10/9/2026, 11:59:13 am",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.179.224"
+    },
+    {
+      "id": 4,
+      "time": "10/9/2026, 11:58:43 am",
+      "user": "admin",
+      "role": "-",
+      "action": "OTP expired",
+      "result": "denied",
+      "detail": "Verification code was not entered within the 30-second window.",
+      "device": "Trusted",
+      "ip": "10.20.2.153"
+    },
+    {
+      "id": 3,
+      "time": "10/9/2026, 11:55:05 am",
+      "user": "admin",
+      "role": "-",
+      "action": "OTP expired",
+      "result": "denied",
+      "detail": "Verification code was not entered within the 30-second window.",
+      "device": "Trusted",
+      "ip": "10.20.69.122"
+    },
+    {
+      "id": 2,
+      "time": "10/9/2026, 11:53:22 am",
+      "user": "admin",
+      "role": "-",
+      "action": "OTP expired",
+      "result": "denied",
+      "detail": "Verification code was not entered within the 30-second window.",
+      "device": "Trusted",
+      "ip": "10.20.136.113"
+    },
+    {
+      "id": 1,
+      "time": "10/9/2026, 11:40:44 am",
+      "user": "admin",
+      "role": "-",
+      "action": "OTP expired",
+      "result": "denied",
+      "detail": "Verification code was not entered within the 30-second window.",
+      "device": "Trusted",
+      "ip": "10.20.13.215"
+    }
+  ],
+  "alerts": [
+    {
+      "id": 4,
+      "time": "10/9/2026, 5:48:29 pm",
+      "severity": "High",
+      "title": "Denied access attempt — HR Records",
+      "detail": "spidey (Student) was denied per policy: Role \"Student\" is not permitted for this resource. Only Admin may access it."
+    },
+    {
+      "id": 3,
+      "time": "10/9/2026, 5:48:21 pm",
+      "severity": "Medium",
+      "title": "Denied access attempt — Grade Management System",
+      "detail": "spidey (Student) was denied per policy: Role \"Student\" is not permitted for this resource. Only Admin, Faculty may access it."
+    },
+    {
+      "id": 2,
+      "time": "10/9/2026, 12:03:50 pm",
+      "severity": "Medium",
+      "title": "Failed faculty registration attempt",
+      "detail": "\"ravi\" tried to register as Faculty with an incorrect invite code."
+    },
+    {
+      "id": 1,
+      "time": "10/9/2026, 12:03:41 pm",
+      "severity": "Medium",
+      "title": "Failed faculty registration attempt",
+      "detail": "\"ravi\" tried to register as Faculty with an incorrect invite code."
+    }
+  ],
+  "accessRequests": [
+    {
+      "id": 3,
+      "user": "peter",
+      "userName": "spidey",
+      "role": "Student",
+      "resourceId": 3,
+      "resourceName": "My Academic Profile",
+      "time": "10/9/2026, 5:48:40 pm",
+      "automatedResult": "granted",
+      "reason": "Access scoped to your own records only.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 2,
+      "user": "peter",
+      "userName": "spidey",
+      "role": "Student",
+      "resourceId": 6,
+      "resourceName": "HR Records",
+      "time": "10/9/2026, 5:48:29 pm",
+      "automatedResult": "denied",
+      "reason": "Role \"Student\" is not permitted for this resource. Only Admin may access it.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 1,
+      "user": "peter",
+      "userName": "spidey",
+      "role": "Student",
+      "resourceId": 2,
+      "resourceName": "Grade Management System",
+      "time": "10/9/2026, 5:48:21 pm",
+      "automatedResult": "denied",
+      "reason": "Role \"Student\" is not permitted for this resource. Only Admin, Faculty may access it.",
+      "manualReview": false,
+      "manualStatus": null
+    }
+  ],
+  "academicRecords": {
+    "student": {
+      "rollNo": "CS21B045",
+      "program": "B.Sc. Computer Science",
+      "semester": "6th",
+      "cgpa": "8.4",
+      "attendance": "91%",
+      "courses": [
+        {
+          "name": "Data Structures",
+          "grade": "A"
+        },
+        {
+          "name": "Operating Systems",
+          "grade": "A-"
+        },
+        {
+          "name": "Database Systems",
+          "grade": "B+"
+        },
+        {
+          "name": "Computer Networks",
+          "grade": "A"
+        }
+      ]
+    }
+  },
+  "nextUserId": 8,
+  "nextLogId": 17,
+  "nextReqId": 4,
+  "nextAlertId": 5
+}
