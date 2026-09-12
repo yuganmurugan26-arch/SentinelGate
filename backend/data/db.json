@@ -12,11 +12,11 @@
     },
     {
       "id": 7,
-      "username": "maguire",
-      "password": "19261926",
+      "username": "peter",
+      "password": "12345",
       "role": "Student",
-      "name": "peter parker",
-      "email": "mvelavan86@gmail.com",
+      "name": "spidey",
+      "email": "yuganmurugan26@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
     },
@@ -109,16 +109,6 @@
       "email": "mvelavan86@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
-    },
-    {
-      "id": 7,
-      "username": "peter",
-      "password": "12345",
-      "role": "Student",
-      "name": "spidey",
-      "email": "yuganmurugan26@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
     }
   ],
   "resources": [
@@ -190,6 +180,17 @@
     }
   ],
   "logs": [
+    {
+      "id": 17,
+      "time": "11/9/2026, 8:16:31 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.60.78"
+    },
     {
       "id": 16,
       "time": "10/9/2026, 5:48:40 pm",
@@ -466,7 +467,7 @@
     }
   },
   "nextUserId": 8,
-  "nextLogId": 17,
+  "nextLogId": 18,
   "nextReqId": 4,
   "nextAlertId": 5
 }

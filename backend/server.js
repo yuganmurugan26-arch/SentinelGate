@@ -15,7 +15,7 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..')));
 app.use(cors());
 app.use(express.json());
 
