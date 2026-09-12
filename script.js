@@ -94,6 +94,7 @@ async function saveStateToBackend(){
 }
 let stateLoadPromise=null;
 function ensureStateLoaded(){
+fetch(`${BACKEND_URL}/`).catch(()=>{}); // ping the backend early to start waking it from sleep
   if(!stateLoadPromise) stateLoadPromise=loadStateFromBackend();
   return stateLoadPromise;
 }
