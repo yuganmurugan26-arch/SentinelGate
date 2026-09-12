@@ -13,6 +13,8 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
+const { Resend } = require('resend');
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const app = express();
 app.use(express.static(path.join(__dirname, '..')));
@@ -205,18 +207,23 @@ app.post('/api/send-otp', async (req, res) => {
   otpStore.set(email, { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 });
 
   try {
-    await transporter.sendMail({
-      from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
-      to: email,
-      subject: 'Your SentinelGate verification code',
-      text: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 30 seconds.\n\nIf you did not request this, you can ignore this email.`,
-      html: `<p>Hi ${username || ''},</p>
-             <p>Your one-time verification code is:</p>
-             <p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p>
-             <p>It expires in 30 seconds. If you did not request this, you can ignore this email.</p>`,
-    });
-    console.log(`OTP sent to ${email}`);
-    res.json({ success: true });
+  if (resend) {
+  await resend.emails.send({
+    from: 'SentinelGate <onboarding@resend.dev>',
+    to: email,
+    subject: 'Your SentinelGate verification code',
+    text: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 30 seconds.`,
+    html: `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 30 seconds.</p>`,
+  });
+} else {
+  await transporter.sendMail({
+    from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: 'Your SentinelGate verification code',
+    text: `Your one-time verification code is: ${code}`,
+    html: `<p style="font-size:28px;font-weight:700;">${code}</p>`,
+  });
+}
   } catch (err) {
     console.error('Failed to send OTP email:', err.message);
     res.status(500).json({ success: false, error: 'Failed to send email' });
