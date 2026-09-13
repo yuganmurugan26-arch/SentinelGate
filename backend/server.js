@@ -2,7 +2,8 @@
  * SentinelGate — OTP delivery backend
  * -----------------------------------
  * A minimal Express server that generates a one-time code server-side,
- * emails it to the user with Nodemailer, and verifies it on request.
+ * emails it to the user (via Resend if configured, else Gmail/Nodemailer),
+ * and verifies it on request.
  * The code is NEVER sent back to the browser — that's the whole point.
  */
 
@@ -17,9 +18,13 @@ const { Resend } = require('resend');
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const app = express();
-app.use(express.static(path.join(__dirname, '..')));
 app.use(cors());
 app.use(express.json());
+
+// Serve the front-end (index.html, style.css, script.js) from this same server.
+// This means once deployed, there's ONE public URL for everything — no separate
+// front-end hosting needed, and no cross-origin issues since it's all one origin.
+app.use(express.static(path.join(__dirname, '..')));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -29,19 +34,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.verify((err) => {
-  if (err) {
-    console.warn('⚠️  Email transport not ready:', err.message);
-    console.warn('   Check GMAIL_USER / GMAIL_APP_PASSWORD in your .env file.');
-  } else {
-    console.log('✅  Email transport ready — real OTP emails can be sent.');
-  }
-});
-
-// Serve the front-end (index.html, style.css, script.js) from this same server.
-// This means once deployed, there's ONE public URL for everything — no separate
-// front-end hosting needed, and no cross-origin issues since it's all one origin.
-app.use(express.static(path.join(__dirname, '..')));
+// Only verify the Gmail transport if Resend isn't configured — no point
+// spending 15-20s on a Gmail connection check at every cold start when
+// Resend is what's actually going to be used to send the OTP.
+if (!resend) {
+  transporter.verify((err) => {
+    if (err) {
+      console.warn('⚠️  Email transport not ready:', err.message);
+      console.warn('   Check GMAIL_USER / GMAIL_APP_PASSWORD in your .env file.');
+    } else {
+      console.log('✅  Email transport ready — real OTP emails can be sent.');
+    }
+  });
+} else {
+  console.log('✅  Resend configured — OTP emails will be sent via Resend.');
+}
 
 const PORT = process.env.PORT || 4000;
 
@@ -51,7 +58,7 @@ const PORT = process.env.PORT || 4000;
    have a real cloud database copy too)
    ============================================================ */
 const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
-  ? createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_KEY)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   : null;
 
 if (supabase) {
@@ -59,8 +66,6 @@ if (supabase) {
 } else {
   console.log('ℹ️   Supabase not configured (SUPABASE_URL/SUPABASE_SERVICE_KEY missing in .env) — using db.json only.');
 }
-
-
 
 async function syncToSupabase(state) {
   if (!supabase) return;
@@ -186,6 +191,7 @@ app.post('/api/state', (req, res) => {
   syncToSupabase(incoming);      // Supabase — the real primary store when configured, fire-and-forget
   res.json({ success: true, savedAt: new Date().toISOString() });
 });
+
 const OTP_TTL_MS = 30 * 1000;      // code expires after 30 seconds
 const MAX_ATTEMPTS = 5;            // guesses allowed before the code is invalidated
 
@@ -197,8 +203,6 @@ function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
- 
-
 app.post('/api/send-otp', async (req, res) => {
   const { email, username } = req.body || {};
   if (!email) return res.status(400).json({ success: false, error: 'email is required' });
@@ -207,23 +211,24 @@ app.post('/api/send-otp', async (req, res) => {
   otpStore.set(email, { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 });
 
   try {
-  if (resend) {
-  await resend.emails.send({
-    from: 'SentinelGate <onboarding@resend.dev>',
-    to: email,
-    subject: 'Your SentinelGate verification code',
-    text: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 30 seconds.`,
-    html: `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 30 seconds.</p>`,
-  });
-} else {
-  await transporter.sendMail({
-    from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
-    to: email,
-    subject: 'Your SentinelGate verification code',
-    text: `Your one-time verification code is: ${code}`,
-    html: `<p style="font-size:28px;font-weight:700;">${code}</p>`,
-  });
-}
+    if (resend) {
+      await resend.emails.send({
+        from: 'SentinelGate <onboarding@resend.dev>',
+        to: email,
+        subject: 'Your SentinelGate verification code',
+        text: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 30 seconds.`,
+        html: `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 30 seconds.</p>`,
+      });
+    } else {
+      await transporter.sendMail({
+        from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: 'Your SentinelGate verification code',
+        text: `Your one-time verification code is: ${code}`,
+        html: `<p style="font-size:28px;font-weight:700;">${code}</p>`,
+      });
+    }
+    res.json({ success: true });   // <-- THE FIX: send a response on success
   } catch (err) {
     console.error('Failed to send OTP email:', err.message);
     res.status(500).json({ success: false, error: 'Failed to send email' });
