@@ -14,8 +14,12 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-const { Resend } = require('resend');
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const brevo = require('@getbrevo/brevo');
+let brevoClient = null;
+if (process.env.BREVO_API_KEY) {
+  brevoClient = new brevo.TransactionalEmailsApi();
+  brevoClient.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+}
 
 const app = express();
 app.use(cors());
@@ -37,7 +41,7 @@ const transporter = nodemailer.createTransport({
 // Only verify the Gmail transport if Resend isn't configured — no point
 // spending 15-20s on a Gmail connection check at every cold start when
 // Resend is what's actually going to be used to send the OTP.
-if (!resend) {
+if (!brevoClient) {
   transporter.verify((err) => {
     if (err) {
       console.warn('⚠️  Email transport not ready:', err.message);
@@ -47,7 +51,7 @@ if (!resend) {
     }
   });
 } else {
-  console.log('✅  Resend configured — OTP emails will be sent via Resend.');
+  console.log('✅  Brevo configured — OTP emails will be sent via Brevo.');
 }
 
 const PORT = process.env.PORT || 4000;
@@ -192,7 +196,7 @@ app.post('/api/state', (req, res) => {
   res.json({ success: true, savedAt: new Date().toISOString() });
 });
 
-const OTP_TTL_MS = 30 * 1000;      // code expires after 30 seconds
+const OTP_TTL_MS = 3 * 60 * 1000;  // code expires after 3 minutes (was 30s — too short for real email delivery)
 const MAX_ATTEMPTS = 5;            // guesses allowed before the code is invalidated
 
 // In-memory store: email -> { code, expiresAt, attempts }
@@ -211,14 +215,14 @@ app.post('/api/send-otp', async (req, res) => {
   otpStore.set(email, { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 });
 
   try {
-    if (resend) {
-      await resend.emails.send({
-        from: 'SentinelGate <onboarding@resend.dev>',
-        to: email,
-        subject: 'Your SentinelGate verification code',
-        text: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 30 seconds.`,
-        html: `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 30 seconds.</p>`,
-      });
+    if (brevoClient) {
+      const sendSmtpEmail = new brevo.SendSmtpEmail();
+      sendSmtpEmail.sender = { email: process.env.BREVO_SENDER_EMAIL, name: 'SentinelGate' };
+      sendSmtpEmail.to = [{ email }];
+      sendSmtpEmail.subject = 'Your SentinelGate verification code';
+      sendSmtpEmail.textContent = `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 3 minutes.`;
+      sendSmtpEmail.htmlContent = `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 3 minutes.</p>`;
+      await brevoClient.sendTransacEmail(sendSmtpEmail);
     } else {
       await transporter.sendMail({
         from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
