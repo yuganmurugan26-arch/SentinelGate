@@ -14,12 +14,10 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-const brevo = require('@getbrevo/brevo');
-let brevoClient = null;
-if (process.env.BREVO_API_KEY) {
-  brevoClient = new brevo.TransactionalEmailsApi();
-  brevoClient.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-}
+const { BrevoClient } = require('@getbrevo/brevo');
+const brevoClient = process.env.BREVO_API_KEY
+  ? new BrevoClient({ apiKey: process.env.BREVO_API_KEY })
+  : null;
 
 const app = express();
 app.use(cors());
@@ -216,13 +214,13 @@ app.post('/api/send-otp', async (req, res) => {
 
   try {
     if (brevoClient) {
-      const sendSmtpEmail = new brevo.SendSmtpEmail();
-      sendSmtpEmail.sender = { email: process.env.BREVO_SENDER_EMAIL, name: 'SentinelGate' };
-      sendSmtpEmail.to = [{ email }];
-      sendSmtpEmail.subject = 'Your SentinelGate verification code';
-      sendSmtpEmail.textContent = `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 3 minutes.`;
-      sendSmtpEmail.htmlContent = `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 3 minutes.</p>`;
-      await brevoClient.sendTransacEmail(sendSmtpEmail);
+      await brevoClient.transactionalEmails.sendTransacEmail({
+        sender: { email: process.env.BREVO_SENDER_EMAIL, name: 'SentinelGate' },
+        to: [{ email }],
+        subject: 'Your SentinelGate verification code',
+        textContent: `Hi ${username || ''},\n\nYour one-time verification code is: ${code}\nIt expires in 3 minutes.`,
+        htmlContent: `<p>Hi ${username || ''},</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p><p>It expires in 3 minutes.</p>`,
+      });
     } else {
       await transporter.sendMail({
         from: `"SentinelGate" <${process.env.GMAIL_USER}>`,
