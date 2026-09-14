@@ -1,76 +1,6 @@
 {
   "users": [
     {
-      "id": 6,
-      "username": "kichaa",
-      "password": "12345678",
-      "role": "Student",
-      "name": "SOMA",
-      "email": "yuganmurugan26@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
-    },
-    {
-      "id": 7,
-      "username": "peter",
-      "password": "12345",
-      "role": "Student",
-      "name": "spidey",
-      "email": "yuganmurugan26@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
-    },
-    {
-      "id": 8,
-      "username": "doom",
-      "password": "12345678",
-      "role": "Student",
-      "name": "victor von doom",
-      "email": "mvelavan86@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
-    },
-    {
-      "id": 9,
-      "username": "MN",
-      "password": "12345678",
-      "role": "Faculty",
-      "name": "MANGAI MAM",
-      "email": "mvelavan86@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
-    },
-    {
-      "id": 10,
-      "username": "ra",
-      "password": "12345678",
-      "role": "Student",
-      "name": "yugan raja",
-      "email": "mvelavan86@gmail.com",
-      "status": "Active",
-      "createdVia": "self-registration"
-    },
-    {
-      "id": 2,
-      "username": "faculty",
-      "password": "Faculty@123",
-      "role": "Faculty",
-      "name": "Dr. Priya Nair",
-      "email": "priya.nair@college.edu",
-      "status": "Active",
-      "createdVia": "seed"
-    },
-    {
-      "id": 3,
-      "username": "student",
-      "password": "Student@123",
-      "role": "Student",
-      "name": "Rahul Dev",
-      "email": "rahul.dev@college.edu",
-      "status": "Active",
-      "createdVia": "seed"
-    },
-    {
       "id": 1,
       "username": "admin",
       "password": "Admin@123",
@@ -102,13 +32,83 @@
     },
     {
       "id": 11,
-      "username": "andrew",
-      "password": "12345678",
+      "username": "vs",
+      "password": "12345",
       "role": "Student",
-      "name": "spidey",
+      "name": "sridhar",
       "email": "mvelavan86@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
+    },
+    {
+      "id": 6,
+      "username": "kichaa",
+      "password": "12345678",
+      "role": "Student",
+      "name": "SOMA",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 7,
+      "username": "peter",
+      "password": "12345",
+      "role": "Student",
+      "name": "spidey",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 8,
+      "username": "madam",
+      "password": "12345",
+      "role": "Faculty",
+      "name": "mangai mam",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 9,
+      "username": "sk",
+      "password": "12345678",
+      "role": "Student",
+      "name": "sam",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 10,
+      "username": "sh",
+      "password": "12345",
+      "role": "Student",
+      "name": "shankar",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 2,
+      "username": "faculty",
+      "password": "Faculty@123",
+      "role": "Faculty",
+      "name": "Dr. Priya Nair",
+      "email": "priya.nair@college.edu",
+      "status": "Active",
+      "createdVia": "seed"
+    },
+    {
+      "id": 3,
+      "username": "student",
+      "password": "Student@123",
+      "role": "Student",
+      "name": "Rahul Dev",
+      "email": "rahul.dev@college.edu",
+      "status": "Active",
+      "createdVia": "seed"
     }
   ],
   "resources": [
@@ -180,6 +180,116 @@
     }
   ],
   "logs": [
+    {
+      "id": 27,
+      "time": "14/9/2026, 10:56:18 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Logout",
+      "result": "granted",
+      "detail": "Session expired after 5 minutes of inactivity — access automatically revoked.",
+      "device": "Trusted",
+      "ip": "10.20.243.231"
+    },
+    {
+      "id": 26,
+      "time": "14/9/2026, 10:25:37 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.168.13"
+    },
+    {
+      "id": 25,
+      "time": "14/9/2026, 10:21:41 am",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.61.34"
+    },
+    {
+      "id": 24,
+      "time": "14/9/2026, 10:20:43 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Student Records Database",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.155.135"
+    },
+    {
+      "id": 23,
+      "time": "14/9/2026, 10:20:41 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Student Records Database",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.192.232"
+    },
+    {
+      "id": 22,
+      "time": "14/9/2026, 10:20:16 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.198.85"
+    },
+    {
+      "id": 21,
+      "time": "14/9/2026, 10:19:42 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Faculty — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.245.29"
+    },
+    {
+      "id": 20,
+      "time": "14/9/2026, 10:17:50 am",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.219.221"
+    },
+    {
+      "id": 19,
+      "time": "14/9/2026, 10:09:15 am",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Viewed academic profile",
+      "result": "granted",
+      "detail": "Self-service access to own record",
+      "device": "Trusted",
+      "ip": "10.20.146.122"
+    },
+    {
+      "id": 18,
+      "time": "14/9/2026, 10:08:50 am",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.195.34"
+    },
     {
       "id": 17,
       "time": "11/9/2026, 8:16:31 pm",
@@ -400,6 +510,19 @@
   ],
   "accessRequests": [
     {
+      "id": 4,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 1,
+      "resourceName": "Student Records Database",
+      "time": "14/9/2026, 10:20:41 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
       "id": 3,
       "user": "peter",
       "userName": "spidey",
@@ -464,10 +587,74 @@
           "grade": "A"
         }
       ]
+    },
+    "kichaa": {
+      "rollNo": "STU55751",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "liza": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "mm": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "vs": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "peter": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "sa": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "sk": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
+    },
+    "sh": {
+      "rollNo": "STU43684",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
     }
   },
-  "nextUserId": 8,
-  "nextLogId": 18,
-  "nextReqId": 4,
+  "nextUserId": 9,
+  "nextLogId": 28,
+  "nextReqId": 5,
   "nextAlertId": 5
 }
