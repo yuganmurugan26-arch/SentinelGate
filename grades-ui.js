@@ -138,9 +138,9 @@ async function renderFacultyGrades() {
         </div>
         <div class="field">
           <label>Exam name</label>
-          <input id="grades-examtype-input" placeholder="e.g. Midterm" list="exam-type-suggestions">
+          <input id="grades-examtype-input" placeholder="e.g. Semester I" list="exam-type-suggestions">
           <datalist id="exam-type-suggestions">
-            <option value="Midterm"><option value="Final"><option value="Assignment 1"><option value="Assignment 2"><option value="Quiz 1">
+            <option value="Semester I"><option value="Semester II"><option value="Semester III"><option value="Semester IV"><option value="Semester V"><option value="Semester VI">
           </datalist>
         </div>
         <button class="btn" id="grades-load-btn">Load students</button>
