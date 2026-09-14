@@ -65,6 +65,9 @@ const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
 
 const academicRoutes = require('./academic')(supabase);
 app.use('/api', academicRoutes);
+
+   const gradesRoutes = require('./grades')(supabase);
+   app.use('/api', gradesRoutes);
 if (supabase) {
   console.log('✅  Supabase configured — users & resources will be read from and saved to Supabase (db.json is kept as an automatic backup).');
 } else {

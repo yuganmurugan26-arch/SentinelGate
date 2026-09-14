@@ -72,11 +72,11 @@
     },
     {
       "id": 9,
-      "username": "sk",
-      "password": "12345678",
-      "role": "Student",
-      "name": "sam",
-      "email": "mvelavan86@gmail.com",
+      "username": "vijay",
+      "password": "12345",
+      "role": "Faculty",
+      "name": "JD",
+      "email": "yammu2635@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
     },
@@ -109,6 +109,16 @@
       "email": "rahul.dev@college.edu",
       "status": "Active",
       "createdVia": "seed"
+    },
+    {
+      "id": 12,
+      "username": "iron man",
+      "password": "12345",
+      "role": "Faculty",
+      "name": "TONY STARK",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
     }
   ],
   "resources": [
@@ -180,6 +190,94 @@
     }
   ],
   "logs": [
+    {
+      "id": 38,
+      "time": "14/9/2026, 4:34:43 pm",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.73.229"
+    },
+    {
+      "id": 37,
+      "time": "14/9/2026, 4:33:19 pm",
+      "user": "iron man",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.236.185"
+    },
+    {
+      "id": 36,
+      "time": "14/9/2026, 4:32:39 pm",
+      "user": "iron man",
+      "role": "-",
+      "action": "OTP expired",
+      "result": "denied",
+      "detail": "Verification code was not entered within the 30-second window.",
+      "device": "Trusted",
+      "ip": "10.20.202.106"
+    },
+    {
+      "id": 35,
+      "time": "14/9/2026, 4:32:02 pm",
+      "user": "iron man",
+      "role": "Faculty",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Faculty — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.98.187"
+    },
+    {
+      "id": 34,
+      "time": "14/9/2026, 4:24:07 pm",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.125.11"
+    },
+    {
+      "id": 33,
+      "time": "14/9/2026, 4:23:34 pm",
+      "user": "vijay",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.111.209"
+    },
+    {
+      "id": 32,
+      "time": "14/9/2026, 4:23:13 pm",
+      "user": "vijay",
+      "role": "Faculty",
+      "action": "Account registered",
+      "result": "granted",
+      "detail": "Self-registered as Faculty — least-privilege role applied by default.",
+      "device": "Trusted",
+      "ip": "10.20.8.150"
+    },
+    {
+      "id": 31,
+      "time": "14/9/2026, 4:10:56 pm",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.132.229"
+    },
     {
       "id": 30,
       "time": "14/9/2026, 11:11:49 am",
@@ -513,6 +611,13 @@
   ],
   "alerts": [
     {
+      "id": 5,
+      "time": "14/9/2026, 4:31:56 pm",
+      "severity": "Medium",
+      "title": "Failed faculty registration attempt",
+      "detail": "\"iron man\" tried to register as Faculty with an incorrect invite code."
+    },
+    {
       "id": 4,
       "time": "10/9/2026, 5:48:29 pm",
       "severity": "High",
@@ -686,8 +791,8 @@
       "courses": []
     }
   },
-  "nextUserId": 9,
-  "nextLogId": 31,
+  "nextUserId": 10,
+  "nextLogId": 39,
   "nextReqId": 5,
-  "nextAlertId": 5
+  "nextAlertId": 6
 }

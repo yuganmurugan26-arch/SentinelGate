@@ -272,7 +272,6 @@ async function handleLoginSubmit(){
     errBox.innerHTML=errHtml('This account has been suspended by an administrator.');
     return;
   }
-
   DB.failedAttempts[u]=0;
   pending.username=u;
   pending.deviceTrusted=deviceTrusted;
@@ -430,7 +429,8 @@ async function handleRegister(){
     return;
   }
 }
-  const user={id:DB.nextUserId++, username, password, role, name, email, status:'Active', createdVia:'self-registration'};
+const nextId = DB.users.reduce((max, u) => Math.max(max, Number(u.id) || 0), 0) + 1;
+const user={id:nextId, username, password, role, name, email, status:'Active', createdVia:'self-registration'};
   DB.users.push(user);
   addLog(user,'Account registered','granted', `Self-registered as ${role} — least-privilege role applied by default.`);
   toast('Account created', `Welcome ${name}. You can now sign in.`, 'success');

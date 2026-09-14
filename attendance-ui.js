@@ -41,6 +41,35 @@ render = function () {
 
 /* ============ Shared helpers ============ */
 
+// The real session token, set by fetchAuthToken() right after login succeeds.
+// Every academic.js route now checks this server-side — nothing in these
+// requests is trusted just because the browser claims it.
+window.authToken = null;
+
+// Called from script.js's handleLoginSubmit() right after the username +
+// password check passes, using the same credentials the user just typed.
+// This gets a real, signed token from the backend — separate from (and in
+// addition to) this app's existing client-side login/MFA flow.
+async function fetchAuthToken(username, password) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.authToken = data.token;
+    } else {
+      window.authToken = null;
+      console.warn('Could not establish a secure session:', data.error);
+    }
+  } catch (err) {
+    window.authToken = null;
+    console.warn('Could not reach backend to establish a secure session:', err.message);
+  }
+}
+
 function attendanceLoadingHtml() {
   return `<div class="page-head"><h2>Attendance</h2><p>Loading…</p></div>`;
 }
@@ -49,8 +78,14 @@ function attendanceErrorHtml(msg) {
   return `<div class="page-head"><h2>Attendance</h2><p style="color:var(--danger)">${esc(msg)}</p></div>`;
 }
 
+function authHeaders(extra = {}) {
+  const headers = { ...extra };
+  if (window.authToken) headers['Authorization'] = `Bearer ${window.authToken}`;
+  return headers;
+}
+
 async function apiGet(path) {
-  const res = await fetch(`${BACKEND_URL}${path}`);
+  const res = await fetch(`${BACKEND_URL}${path}`, { headers: authHeaders() });
   const data = await res.json();
   if (!res.ok || data.success === false) throw new Error(data.error || 'Request failed');
   return data;
@@ -59,7 +94,7 @@ async function apiGet(path) {
 async function apiPost(path, body) {
   const res = await fetch(`${BACKEND_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(body),
   });
   const data = await res.json();
