@@ -140,7 +140,7 @@ async function renderFacultyGrades() {
           <label>Exam name</label>
           <input id="grades-examtype-input" placeholder="e.g. Semester I" list="exam-type-suggestions">
           <datalist id="exam-type-suggestions">
-            <option value="Semester I"><option value="Semester II"><option value="Semester III"><option value="Semester IV"><option value="Semester V"><option value="Semester VI">
+            <option value="Semester I"><option value="Semester II"><option value="Semester III"><option value="Semester IV"><option value="Semester V"><option value="Final Semester">
           </datalist>
         </div>
         <button class="btn" id="grades-load-btn">Load students</button>
