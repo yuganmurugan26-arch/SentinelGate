@@ -111,7 +111,7 @@ async function renderStudentAttendance() {
         <h3>${esc(course.name)}</h3>
         <p class="card-sub">${esc(course.code)}${course.semester ? ' · ' + esc(course.semester) : ''}</p>
         <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:${color}">${pct}</div>
-        <p class="card-sub" style="margin-top:6px">${att.present}/${att.total} sessions attended</p>
+        <p class="card-sub" style="margin-top:6px">${att.present} present · ${att.late} late · ${att.absent} absent (${att.total} sessions)</p>
       </div>`;
   }));
 

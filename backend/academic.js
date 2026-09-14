@@ -166,10 +166,22 @@ module.exports = function (supabase) {
     if (error) return res.status(500).json({ success: false, error: error.message });
 
     const total = data.length;
-    const present = data.filter(r => r.status === 'present' || r.status === 'late').length;
-    const percentage = total ? Math.round((present / total) * 1000) / 10 : null;
+    const presentCount = data.filter(r => r.status === 'present').length;
+    const lateCount = data.filter(r => r.status === 'late').length;
+    const absentCount = data.filter(r => r.status === 'absent').length;
+    // "late" counts as half credit toward the percentage — student showed up, just not on time.
+    const weightedCredit = presentCount + (lateCount * 0.5);
+    const percentage = total ? Math.round((weightedCredit / total) * 1000) / 10 : null;
 
-    res.json({ success: true, records: data, total, present, percentage });
+    res.json({
+      success: true,
+      records: data,
+      total,
+      present: presentCount,
+      late: lateCount,
+      absent: absentCount,
+      percentage,
+    });
   });
 
   // GET /api/attendance/course/:courseId/date/:date — one course's attendance for one day (faculty view)
