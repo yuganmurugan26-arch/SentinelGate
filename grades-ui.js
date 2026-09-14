@@ -151,7 +151,8 @@ async function renderFacultyGrades() {
 }
 
 function wireFacultyGradesEvents() {
-  document.getElementById('grades-load-btn').onclick = loadStudentsForGrades;
+  const btn = document.getElementById('grades-load-btn');
+  if (btn) btn.onclick = loadStudentsForGrades; // button won't exist if this faculty has no courses assigned
 }
 
 async function loadStudentsForGrades() {
