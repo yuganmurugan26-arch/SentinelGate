@@ -191,6 +191,17 @@
   ],
   "logs": [
     {
+      "id": 39,
+      "time": "14/9/2026, 4:47:11 pm",
+      "user": "iron man",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.75.98"
+    },
+    {
       "id": 38,
       "time": "14/9/2026, 4:34:43 pm",
       "user": "admin",
@@ -792,7 +803,7 @@
     }
   },
   "nextUserId": 10,
-  "nextLogId": 39,
+  "nextLogId": 40,
   "nextReqId": 5,
   "nextAlertId": 6
 }

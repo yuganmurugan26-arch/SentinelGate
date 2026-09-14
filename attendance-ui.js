@@ -188,7 +188,8 @@ async function renderFacultyAttendance() {
 }
 
 function wireFacultyAttendanceEvents() {
-  document.getElementById('att-load-btn').onclick = loadStudentsForAttendance;
+  const btn = document.getElementById('att-load-btn');
+  if (btn) btn.onclick = loadStudentsForAttendance; // button won't exist if this faculty has no courses assigned
 }
 
 async function loadStudentsForAttendance() {
