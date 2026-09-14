@@ -181,6 +181,39 @@
   ],
   "logs": [
     {
+      "id": 30,
+      "time": "14/9/2026, 11:11:49 am",
+      "user": "admin",
+      "role": "Admin",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.149.185"
+    },
+    {
+      "id": 29,
+      "time": "14/9/2026, 11:07:58 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.48.145"
+    },
+    {
+      "id": 28,
+      "time": "14/9/2026, 11:06:53 am",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.71.93"
+    },
+    {
       "id": 27,
       "time": "14/9/2026, 10:56:18 am",
       "user": "madam",
@@ -654,7 +687,7 @@
     }
   },
   "nextUserId": 9,
-  "nextLogId": 28,
+  "nextLogId": 31,
   "nextReqId": 5,
   "nextAlertId": 5
 }

@@ -177,7 +177,7 @@ module.exports = function (supabase) {
     const { courseId, date } = req.params;
     const { data, error } = await supabase
       .from('attendance_records')
-      .select('student_id, status, student:users(name, username)')
+      .select('student_id, status, student:users!attendance_records_student_id_fkey(name, username)')
       .eq('course_id', courseId)
       .eq('date', date);
     if (error) return res.status(500).json({ success: false, error: error.message });
