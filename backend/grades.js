@@ -1,4 +1,4 @@
- /**
+/**
  * SentinelGate — Grades routes
  * -------------------------------------------------------------
  * Same isolated-file pattern as academic.js. This is deliberately
@@ -107,6 +107,85 @@ module.exports = function (supabase) {
     const { data, error } = await query;
     if (error) return res.status(500).json({ success: false, error: error.message });
     res.json({ success: true, grades: data });
+  });
+
+  // PUT /api/grades/:id — edit an existing grade entry. Faculty-only (not Admin), and only
+  // for their own course — matching the requirement that editing is a Faculty-specific power.
+  // Body: { marks, maxMarks, requesterRole, requesterId }
+  router.put('/grades/:id', async (req, res) => {
+    const { id } = req.params;
+    const { marks, maxMarks, requesterRole, requesterId } = req.body || {};
+
+    if (requesterRole !== 'Faculty') {
+      return res.status(403).json({ success: false, error: 'Only Faculty can edit grades.' });
+    }
+    if (marks === undefined || maxMarks === undefined) {
+      return res.status(400).json({ success: false, error: 'marks and maxMarks are required.' });
+    }
+    const marksNum = Number(marks);
+    const maxMarksNum = Number(maxMarks);
+    if (Number.isNaN(marksNum) || Number.isNaN(maxMarksNum) || maxMarksNum <= 0 || marksNum < 0 || marksNum > maxMarksNum) {
+      return res.status(400).json({ success: false, error: 'marks must be a number between 0 and maxMarks.' });
+    }
+
+    // Confirm this grade belongs to a course this faculty actually teaches.
+    const { data: existing, error: fetchErr } = await supabase
+      .from('grades')
+      .select('course_id')
+      .eq('id', id)
+      .single();
+    if (fetchErr) return res.status(404).json({ success: false, error: 'Grade entry not found.' });
+
+    const { data: course, error: courseErr } = await supabase
+      .from('courses')
+      .select('faculty_id')
+      .eq('id', existing.course_id)
+      .single();
+    if (courseErr) return res.status(500).json({ success: false, error: courseErr.message });
+    if (!course || String(course.faculty_id) !== String(requesterId)) {
+      return res.status(403).json({ success: false, error: 'You can only edit grades for your own courses.' });
+    }
+
+    const { data, error } = await supabase
+      .from('grades')
+      .update({ marks: marksNum, max_marks: maxMarksNum, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) return res.status(500).json({ success: false, error: error.message });
+    res.json({ success: true, grade: data });
+  });
+
+  // DELETE /api/grades/:id — Faculty-only, own course only.
+  // Body: { requesterRole, requesterId }
+  router.delete('/grades/:id', async (req, res) => {
+    const { id } = req.params;
+    const { requesterRole, requesterId } = req.body || {};
+
+    if (requesterRole !== 'Faculty') {
+      return res.status(403).json({ success: false, error: 'Only Faculty can delete grades.' });
+    }
+
+    const { data: existing, error: fetchErr } = await supabase
+      .from('grades')
+      .select('course_id')
+      .eq('id', id)
+      .single();
+    if (fetchErr) return res.status(404).json({ success: false, error: 'Grade entry not found.' });
+
+    const { data: course, error: courseErr } = await supabase
+      .from('courses')
+      .select('faculty_id')
+      .eq('id', existing.course_id)
+      .single();
+    if (courseErr) return res.status(500).json({ success: false, error: courseErr.message });
+    if (!course || String(course.faculty_id) !== String(requesterId)) {
+      return res.status(403).json({ success: false, error: 'You can only delete grades for your own courses.' });
+    }
+
+    const { error } = await supabase.from('grades').delete().eq('id', id);
+    if (error) return res.status(500).json({ success: false, error: error.message });
+    res.json({ success: true });
   });
 
   return router;

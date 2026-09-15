@@ -178,34 +178,107 @@ async function loadGradeManagementResourceData(resource) {
       return;
     }
 
+    const isFaculty = session.user.role === 'Faculty';
     let rowsHtml = '';
     for (const course of courses) {
       const { enrollments } = await apiGet(`/api/enrollments/course/${course.id}`);
       for (const e of enrollments) {
         const s = e.student;
         const g = await apiGet(`/api/grades/student/${s.id}/course/${course.id}`);
-        const breakdown = g.grades.length
-          ? g.grades.map(row => `${esc(row.exam_type)}: ${row.marks}/${row.max_marks}`).join(', ')
-          : 'No grades recorded yet.';
-        const pct = g.percentage === null ? '—' : g.percentage + '%';
-        rowsHtml += `<tr>
-          <td class="strong">${esc(s.name)}</td>
-          <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
-          <td>${breakdown}</td>
-          <td>${pct}</td>
-        </tr>`;
+        if (!g.grades.length) {
+          rowsHtml += `<tr>
+            <td class="strong">${esc(s.name)}</td>
+            <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
+            <td colspan="2" style="color:var(--text-faint);">No grades recorded yet.</td>
+            ${isFaculty ? '<td></td>' : ''}
+          </tr>`;
+          continue;
+        }
+        g.grades.forEach(row => {
+          rowsHtml += `<tr data-grade-id="${row.id}">
+            <td class="strong">${esc(s.name)}</td>
+            <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
+            <td>${esc(row.exam_type)}</td>
+            <td>
+              <span class="grade-view-mode">${row.marks}/${row.max_marks}</span>
+              <span class="grade-edit-mode" style="display:none;">
+                <input type="number" min="0" class="grade-edit-marks" value="${row.marks}" style="width:60px;">/<input type="number" min="1" class="grade-edit-max" value="${row.max_marks}" style="width:60px;">
+              </span>
+            </td>
+            ${isFaculty ? `
+              <td>
+                <span class="grade-view-mode">
+                  <button class="btn small secondary" onclick="startEditGrade(${row.id})">Edit</button>
+                  <button class="btn small danger-btn" onclick="deleteGrade(${row.id}, ${course.id}, '${s.id}')">Delete</button>
+                </span>
+                <span class="grade-edit-mode" style="display:none;">
+                  <button class="btn small" onclick="saveEditGrade(${row.id})">Save</button>
+                  <button class="btn small secondary" onclick="cancelEditGrade(${row.id})">Cancel</button>
+                </span>
+              </td>` : ''}
+          </tr>`;
+        });
       }
     }
 
     box.innerHTML = `
       <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
-      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}</p>
-      <table><thead><tr><th>Student</th><th>Course</th><th>Marks</th><th>Overall %</th></tr></thead>
-      <tbody>${rowsHtml || '<tr><td colspan="4" style="color:var(--text-faint);">No enrolled students yet.</td></tr>'}</tbody>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}${isFaculty ? ' · You can edit or delete grades for your own courses.' : ''}</p>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Exam</th><th>Marks</th>${isFaculty ? '<th>Actions</th>' : ''}</tr></thead>
+      <tbody>${rowsHtml || `<tr><td colspan="${isFaculty ? 5 : 4}" style="color:var(--text-faint);">No enrolled students yet.</td></tr>`}</tbody>
       </table>`;
   } catch (err) {
     box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
       <div class="empty-state" style="color:var(--danger);">Could not load grade data: ${esc(err.message)}</div>`;
+  }
+}
+
+function startEditGrade(gradeId) {
+  const row = document.querySelector(`tr[data-grade-id="${gradeId}"]`);
+  row.querySelectorAll('.grade-view-mode').forEach(el => el.style.display = 'none');
+  row.querySelectorAll('.grade-edit-mode').forEach(el => el.style.display = 'inline-block');
+}
+
+function cancelEditGrade(gradeId) {
+  const row = document.querySelector(`tr[data-grade-id="${gradeId}"]`);
+  row.querySelectorAll('.grade-edit-mode').forEach(el => el.style.display = 'none');
+  row.querySelectorAll('.grade-view-mode').forEach(el => el.style.display = 'inline-block');
+}
+
+async function saveEditGrade(gradeId) {
+  const row = document.querySelector(`tr[data-grade-id="${gradeId}"]`);
+  const marks = row.querySelector('.grade-edit-marks').value;
+  const maxMarks = row.querySelector('.grade-edit-max').value;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/grades/${gradeId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ marks, maxMarks, requesterRole: session.user.role, requesterId: session.user.id }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.success === false) throw new Error(data.error || 'Update failed');
+    toast('Grade updated', `${marks}/${maxMarks} saved.`, 'success');
+    row.querySelector('.grade-view-mode').textContent = `${marks}/${maxMarks}`;
+    cancelEditGrade(gradeId);
+  } catch (err) {
+    toast('Failed to update', err.message, 'error');
+  }
+}
+
+async function deleteGrade(gradeId, courseId, studentId) {
+  if (!confirm('Delete this grade entry? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/grades/${gradeId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requesterRole: session.user.role, requesterId: session.user.id }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.success === false) throw new Error(data.error || 'Delete failed');
+    toast('Grade deleted', '', 'success');
+    document.querySelector(`tr[data-grade-id="${gradeId}"]`).remove();
+  } catch (err) {
+    toast('Failed to delete', err.message, 'error');
   }
 }
 
