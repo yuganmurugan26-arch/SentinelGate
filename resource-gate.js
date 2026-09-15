@@ -32,12 +32,14 @@ function requiredResourceFor(view) {
   return null;
 }
 
+// Session-only memory of what's been verified — NOT persisted anywhere.
+// This resets every time the page reloads or the user logs in again,
+// which is the point: Zero Trust means re-verifying every session,
+// not remembering a grant forever after the first check.
+const gateGrantedThisSession = new Set();
+
 function hasGrantedAccess(resourceName) {
-  return DB.accessRequests.some(r =>
-    r.user === session.user.username &&
-    r.resourceName === resourceName &&
-    r.automatedResult === 'granted'
-  );
+  return gateGrantedThisSession.has(resourceName);
 }
 
 function accessGateHtml(resourceName, featureLabel) {
@@ -87,7 +89,8 @@ function runGateVerification(resourceName) {
     </div>`;
 
     if (evalResult.granted) {
-      setTimeout(() => { render(); }, 900); // re-render now that access is on record — the gate will pass this time
+      gateGrantedThisSession.add(resourceName); // unlocks this session only — resets on next login/reload
+      setTimeout(() => { render(); }, 900);
     }
   });
 }
