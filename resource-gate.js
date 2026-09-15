@@ -108,3 +108,126 @@ render = function () {
   }
   _renderBeforeGate();
 };
+
+/* ============ Custom detail view for the "Attendance Records" resource ============
+   script.js's openResourceDetail() has a lookup table of resource name -> display
+   function (showStudentRecordsDatabase, showGradeManagementSystem, etc). Rather than
+   editing that table directly, we wrap the whole function: check for our resource
+   first, and fall through to the original for everything else, completely unchanged. */
+
+function showAttendanceRecordsResource(resource) {
+  addLog(session.user, `Opened ${resource.name}`, 'granted', `Viewed by ${session.user.role}`);
+  document.getElementById('academic-modal-content').innerHTML = `
+    <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+    <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Loading student attendance…</p>`;
+  document.getElementById('academic-modal').classList.remove('hidden');
+  loadAttendanceRecordsResourceData(resource);
+}
+
+async function loadAttendanceRecordsResourceData(resource) {
+  const box = document.getElementById('academic-modal-content');
+  try {
+    const courses = session.user.role === 'Admin'
+      ? (await apiGet('/api/courses')).courses
+      : (await apiGet(`/api/courses/faculty/${session.user.id}`)).courses;
+
+    if (!courses.length) {
+      box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+        <div class="empty-state">No courses found yet.</div>`;
+      return;
+    }
+
+    let rowsHtml = '';
+    for (const course of courses) {
+      const { enrollments } = await apiGet(`/api/enrollments/course/${course.id}`);
+      for (const e of enrollments) {
+        const s = e.student;
+        const att = await apiGet(`/api/attendance/student/${s.id}/course/${course.id}`);
+        const pct = att.percentage === null ? '—' : att.percentage + '%';
+        rowsHtml += `<tr>
+          <td class="strong">${esc(s.name)}</td>
+          <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
+          <td>${att.present}</td><td>${att.late}</td><td>${att.absent}</td>
+          <td>${pct}</td>
+        </tr>`;
+      }
+    }
+
+    box.innerHTML = `
+      <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}</p>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Present</th><th>Late</th><th>Absent</th><th>Attendance %</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="6" style="color:var(--text-faint);">No enrolled students yet.</td></tr>'}</tbody>
+      </table>`;
+  } catch (err) {
+    box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <div class="empty-state" style="color:var(--danger);">Could not load attendance data: ${esc(err.message)}</div>`;
+  }
+}
+
+async function loadGradeManagementResourceData(resource) {
+  const box = document.getElementById('academic-modal-content');
+  try {
+    const courses = session.user.role === 'Admin'
+      ? (await apiGet('/api/courses')).courses
+      : (await apiGet(`/api/courses/faculty/${session.user.id}`)).courses;
+
+    if (!courses.length) {
+      box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+        <div class="empty-state">No courses found yet.</div>`;
+      return;
+    }
+
+    let rowsHtml = '';
+    for (const course of courses) {
+      const { enrollments } = await apiGet(`/api/enrollments/course/${course.id}`);
+      for (const e of enrollments) {
+        const s = e.student;
+        const g = await apiGet(`/api/grades/student/${s.id}/course/${course.id}`);
+        const breakdown = g.grades.length
+          ? g.grades.map(row => `${esc(row.exam_type)}: ${row.marks}/${row.max_marks}`).join(', ')
+          : 'No grades recorded yet.';
+        const pct = g.percentage === null ? '—' : g.percentage + '%';
+        rowsHtml += `<tr>
+          <td class="strong">${esc(s.name)}</td>
+          <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
+          <td>${breakdown}</td>
+          <td>${pct}</td>
+        </tr>`;
+      }
+    }
+
+    box.innerHTML = `
+      <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}</p>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Marks</th><th>Overall %</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="4" style="color:var(--text-faint);">No enrolled students yet.</td></tr>'}</tbody>
+      </table>`;
+  } catch (err) {
+    box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <div class="empty-state" style="color:var(--danger);">Could not load grade data: ${esc(err.message)}</div>`;
+  }
+}
+
+function showGradeManagementResource(resource) {
+  addLog(session.user, `Opened ${resource.name}`, 'granted', `Viewed by ${session.user.role}`);
+  document.getElementById('academic-modal-content').innerHTML = `
+    <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+    <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Loading grades…</p>`;
+  document.getElementById('academic-modal').classList.remove('hidden');
+  loadGradeManagementResourceData(resource);
+}
+
+const _openResourceDetailBeforeGate = openResourceDetail;
+openResourceDetail = function (resourceId) {
+  const resource = DB.resources.find(r => r.id === resourceId);
+  if (resource && resource.name === 'Attendance Records') {
+    showAttendanceRecordsResource(resource);
+    return;
+  }
+  if (resource && resource.name === 'Grade Management System') {
+    showGradeManagementResource(resource);
+    return;
+  }
+  _openResourceDetailBeforeGate(resourceId);
+};
