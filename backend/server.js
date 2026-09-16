@@ -68,6 +68,10 @@ app.use('/api', academicRoutes);
 
    const gradesRoutes = require('./grades')(supabase);
    app.use('/api', gradesRoutes);
+
+
+   const profileRoutes = require('./profiles')(supabase);
+app.use('/api', profileRoutes);
 if (supabase) {
   console.log('✅  Supabase configured — users & resources will be read from and saved to Supabase (db.json is kept as an automatic backup).');
 } else {

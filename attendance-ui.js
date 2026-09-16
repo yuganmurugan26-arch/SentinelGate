@@ -295,7 +295,14 @@ async function renderAdminAttendance() {
         <div class="field"><label>Course name</label><input id="new-course-name" placeholder="e.g. Data Structures"></div>
         <div class="field"><label>Course code</label><input id="new-course-code" placeholder="e.g. CS301"></div>
         <div class="field"><label>Faculty</label><select id="new-course-faculty">${facultyOptions}</select></div>
-        <div class="field"><label>Semester</label><input id="new-course-semester" placeholder="e.g. 6th"></div>
+        <div class="field"><label>Semester</label><select id="new-course-semester">
+          <option value="Semester I">Semester I</option>
+          <option value="Semester II">Semester II</option>
+          <option value="Semester III">Semester III</option>
+          <option value="Semester IV">Semester IV</option>
+          <option value="Semester V">Semester V</option>
+          <option value="Semester VI">Semester VI</option>
+        </select></div>
         <button class="btn" id="create-course-btn" style="margin-top:8px;">Create course</button>
 
         <hr style="border-color:var(--border);margin:18px 0;">

@@ -190,32 +190,25 @@ async function loadGradeManagementResourceData(resource) {
             <td class="strong">${esc(s.name)}</td>
             <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
             <td colspan="2" style="color:var(--text-faint);">No grades recorded yet.</td>
-            ${isFaculty ? '<td></td>' : ''}
           </tr>`;
           continue;
         }
         g.grades.forEach(row => {
-          rowsHtml += `<tr data-grade-id="${row.id}">
+          const contextAttr = isFaculty
+            ? `oncontextmenu="showGradeContextMenu(event, ${row.id}, ${course.id}, '${s.id}')"`
+            : '';
+          rowsHtml += `<tr data-grade-id="${row.id}" ${contextAttr} style="${isFaculty ? 'cursor:context-menu;' : ''}">
             <td class="strong">${esc(s.name)}</td>
             <td>${esc(course.name)} <span class="card-sub">(${esc(course.code)})</span></td>
             <td>${esc(row.exam_type)}</td>
             <td>
               <span class="grade-view-mode">${row.marks}/${row.max_marks}</span>
-              <span class="grade-edit-mode" style="display:none;">
-                <input type="number" min="0" class="grade-edit-marks" value="${row.marks}" style="width:60px;">/<input type="number" min="1" class="grade-edit-max" value="${row.max_marks}" style="width:60px;">
+              <span class="grade-edit-mode" style="display:none;white-space:nowrap;">
+                <input type="number" min="0" class="grade-edit-marks" value="${row.marks}" style="width:55px;">/<input type="number" min="1" class="grade-edit-max" value="${row.max_marks}" style="width:55px;">
+                <button class="btn small" onclick="saveEditGrade(${row.id})">Save</button>
+                <button class="btn small secondary" onclick="cancelEditGrade(${row.id})">Cancel</button>
               </span>
             </td>
-            ${isFaculty ? `
-              <td>
-                <span class="grade-view-mode">
-                  <button class="btn small secondary" onclick="startEditGrade(${row.id})">Edit</button>
-                  <button class="btn small danger-btn" onclick="deleteGrade(${row.id}, ${course.id}, '${s.id}')">Delete</button>
-                </span>
-                <span class="grade-edit-mode" style="display:none;">
-                  <button class="btn small" onclick="saveEditGrade(${row.id})">Save</button>
-                  <button class="btn small secondary" onclick="cancelEditGrade(${row.id})">Cancel</button>
-                </span>
-              </td>` : ''}
           </tr>`;
         });
       }
@@ -223,14 +216,39 @@ async function loadGradeManagementResourceData(resource) {
 
     box.innerHTML = `
       <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
-      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}${isFaculty ? ' · You can edit or delete grades for your own courses.' : ''}</p>
-      <table><thead><tr><th>Student</th><th>Course</th><th>Exam</th><th>Marks</th>${isFaculty ? '<th>Actions</th>' : ''}</tr></thead>
-      <tbody>${rowsHtml || `<tr><td colspan="${isFaculty ? 5 : 4}" style="color:var(--text-faint);">No enrolled students yet.</td></tr>`}</tbody>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Sensitivity: ${esc(resource.sensitivity)} · Allowed roles: ${resource.roles.join(', ')}${isFaculty ? ' · Right-click a row to edit or delete a grade you entered.' : ''}</p>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Exam</th><th>Marks</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="4" style="color:var(--text-faint);">No enrolled students yet.</td></tr>'}</tbody>
       </table>`;
   } catch (err) {
     box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
       <div class="empty-state" style="color:var(--danger);">Could not load grade data: ${esc(err.message)}</div>`;
   }
+}
+
+function showGradeContextMenu(event, gradeId, courseId, studentId) {
+  event.preventDefault();
+  let menu = document.getElementById('grade-context-menu');
+  if (!menu) {
+    menu = document.createElement('div');
+    menu.id = 'grade-context-menu';
+    document.body.appendChild(menu);
+  }
+  menu.className = 'card';
+  menu.style.cssText = 'position:fixed;z-index:9999;padding:6px;display:flex;flex-direction:column;gap:4px;min-width:110px;';
+  menu.innerHTML = `
+    <button class="btn small secondary" style="width:100%;" onclick="startEditGrade(${gradeId}); hideGradeContextMenu();">Edit</button>
+    <button class="btn small danger-btn" style="width:100%;" onclick="deleteGrade(${gradeId}, ${courseId}, '${studentId}'); hideGradeContextMenu();">Delete</button>
+  `;
+  menu.style.left = event.clientX + 'px';
+  menu.style.top = event.clientY + 'px';
+  menu.style.display = 'flex';
+  setTimeout(() => document.addEventListener('click', hideGradeContextMenu, { once: true }), 0);
+}
+
+function hideGradeContextMenu() {
+  const menu = document.getElementById('grade-context-menu');
+  if (menu) menu.style.display = 'none';
 }
 
 function startEditGrade(gradeId) {
@@ -302,5 +320,166 @@ openResourceDetail = function (resourceId) {
     showGradeManagementResource(resource);
     return;
   }
+  if (resource && resource.name === 'Student Records Database') {
+    showStudentRecordsResource(resource);
+    return;
+  }
   _openResourceDetailBeforeGate(resourceId);
 };
+
+/* ============ Custom detail view for "Student Records Database" ============
+   Name, Roll No, Program, CGPA (cumulative, real grades), and Attendance
+   (real, filtered by a Semester I-VI dropdown). CGPA uses the standard
+   percentage/9.5 conversion to a 10-point scale. Roll No/Program are the
+   only editable fields (Faculty-only, via right-click) — Name can't be
+   edited here, and CGPA/Attendance are computed, not raw data. */
+
+const SEMESTER_OPTIONS = ['Semester I', 'Semester II', 'Semester III', 'Semester IV', 'Semester V', 'Semester VI'];
+
+function showStudentRecordsResource(resource) {
+  addLog(session.user, `Opened ${resource.name}`, 'granted', `Viewed by ${session.user.role}`);
+  document.getElementById('academic-modal-content').innerHTML = `
+    <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+    <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Loading student records…</p>`;
+  document.getElementById('academic-modal').classList.remove('hidden');
+  loadStudentRecordsResourceData(resource, SEMESTER_OPTIONS[0]);
+}
+
+async function loadStudentRecordsResourceData(resource, selectedSemester) {
+  const box = document.getElementById('academic-modal-content');
+  try {
+    const students = DB.users.filter(u => u.role === 'Student');
+    const { courses: allCourses } = await apiGet('/api/courses');
+    const semesterCourses = allCourses.filter(c => c.semester === selectedSemester);
+    const isFaculty = session.user.role === 'Faculty';
+
+    const rows = await Promise.all(students.map(async (s) => {
+      let rollNo = '—', program = '—';
+      try {
+        const p = await apiGet(`/api/profile/${s.id}`);
+        rollNo = p.rollNo || '—';
+        program = p.program || '—';
+      } catch (e) { /* no profile set yet — leave as — */ }
+
+      const { enrollments } = await apiGet(`/api/enrollments/student/${s.id}`);
+
+      let totalMarks = 0, totalMax = 0;
+      for (const e of enrollments) {
+        const g = await apiGet(`/api/grades/student/${s.id}/course/${e.course.id}`);
+        totalMarks += g.totalMarks;
+        totalMax += g.totalMax;
+      }
+      const cgpa = totalMax ? (((totalMarks / totalMax) * 100) / 9.5).toFixed(2) : '—';
+
+      let presentSum = 0, totalSum = 0;
+      for (const course of semesterCourses) {
+        if (!enrollments.some(e => e.course.id === course.id)) continue;
+        const att = await apiGet(`/api/attendance/student/${s.id}/course/${course.id}`);
+        presentSum += att.present + att.late * 0.5;
+        totalSum += att.total;
+      }
+      const attendancePct = totalSum ? Math.round((presentSum / totalSum) * 1000) / 10 + '%' : '—';
+
+      return { student: s, rollNo, program, cgpa, attendancePct };
+    }));
+
+    const semesterOptionsHtml = SEMESTER_OPTIONS
+      .map(sOpt => `<option value="${sOpt}" ${sOpt === selectedSemester ? 'selected' : ''}>${sOpt}</option>`)
+      .join('');
+
+    const rowsHtml = rows.map(r => {
+      const contextAttr = isFaculty ? `oncontextmenu="showProfileContextMenu(event, '${r.student.id}')"` : '';
+      return `<tr data-student-id="${r.student.id}" ${contextAttr} style="${isFaculty ? 'cursor:context-menu;' : ''}">
+        <td class="strong">${esc(r.student.name)}</td>
+        <td class="profile-view-rollno">${esc(r.rollNo)}</td>
+        <td class="profile-view-program">${esc(r.program)}</td>
+        <td>${r.cgpa}</td>
+        <td>${r.attendancePct}</td>
+      </tr>`;
+    }).join('');
+
+    box.innerHTML = `
+      <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">${students.length} student record(s) — visible to Admin &amp; Faculty only.${isFaculty ? ' Right-click a row to edit or clear roll no / program.' : ''}</p>
+      <div class="field" style="max-width:220px;margin-bottom:12px;">
+        <label>Attendance for</label>
+        <select id="src-semester-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), this.value)">
+          ${semesterOptionsHtml}
+        </select>
+      </div>
+      <table><thead><tr><th>Name</th><th>Roll No.</th><th>Program</th><th>CGPA</th><th>Attendance</th></tr></thead>
+      <tbody>${rowsHtml || '<tr><td colspan="5" style="color:var(--text-faint);">No student accounts yet.</td></tr>'}</tbody>
+      </table>`;
+  } catch (err) {
+    box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
+      <div class="empty-state" style="color:var(--danger);">Could not load student records: ${esc(err.message)}</div>`;
+  }
+}
+
+function showProfileContextMenu(event, studentId) {
+  event.preventDefault();
+  let menu = document.getElementById('grade-context-menu'); // shared floating menu element
+  if (!menu) {
+    menu = document.createElement('div');
+    menu.id = 'grade-context-menu';
+    document.body.appendChild(menu);
+  }
+  menu.className = 'card';
+  menu.style.cssText = 'position:fixed;z-index:9999;padding:6px;display:flex;flex-direction:column;gap:4px;min-width:110px;';
+  menu.innerHTML = `
+    <button class="btn small secondary" style="width:100%;" onclick="startEditProfile('${studentId}'); hideGradeContextMenu();">Edit</button>
+    <button class="btn small danger-btn" style="width:100%;" onclick="deleteProfile('${studentId}'); hideGradeContextMenu();">Delete</button>
+  `;
+  menu.style.left = event.clientX + 'px';
+  menu.style.top = event.clientY + 'px';
+  menu.style.display = 'flex';
+  setTimeout(() => document.addEventListener('click', hideGradeContextMenu, { once: true }), 0);
+}
+
+function startEditProfile(studentId) {
+  const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
+  const rollTd = row.querySelector('.profile-view-rollno');
+  const progTd = row.querySelector('.profile-view-program');
+  const currentRoll = rollTd.textContent.trim();
+  const currentProgram = progTd.textContent.trim();
+  rollTd.innerHTML = `<input type="text" class="profile-edit-rollno" value="${currentRoll === '—' ? '' : esc(currentRoll)}" style="width:100px;">`;
+  progTd.innerHTML = `<input type="text" class="profile-edit-program" value="${currentProgram === '—' ? '' : esc(currentProgram)}" style="width:140px;">
+    <button class="btn small" onclick="saveProfileEdit('${studentId}')">Save</button>
+    <button class="btn small secondary" onclick="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), document.getElementById('src-semester-select').value)">Cancel</button>`;
+}
+
+async function saveProfileEdit(studentId) {
+  const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
+  const rollNo = row.querySelector('.profile-edit-rollno').value.trim();
+  const program = row.querySelector('.profile-edit-program').value.trim();
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profile/${studentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rollNo, program, requesterRole: session.user.role }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.success === false) throw new Error(data.error || 'Update failed');
+    toast('Profile updated', '', 'success');
+    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
+  } catch (err) {
+    toast('Failed to update', err.message, 'error');
+  }
+}
+
+async function deleteProfile(studentId) {
+  if (!confirm("Clear this student's roll number and program back to blank?")) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profile/${studentId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requesterRole: session.user.role }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.success === false) throw new Error(data.error || 'Delete failed');
+    toast('Profile cleared', '', 'success');
+    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
+  } catch (err) {
+    toast('Failed to clear', err.message, 'error');
+  }
+}

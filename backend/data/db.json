@@ -1,16 +1,6 @@
 {
   "users": [
     {
-      "id": 1,
-      "username": "admin",
-      "password": "Admin@123",
-      "role": "Admin",
-      "name": "velavan",
-      "email": "mvelavan86@gmail.com",
-      "status": "Active",
-      "createdVia": "seed"
-    },
-    {
       "id": 4,
       "username": "liza",
       "password": "12345678",
@@ -81,12 +71,22 @@
       "createdVia": "self-registration"
     },
     {
-      "id": 10,
-      "username": "sh",
+      "id": 1,
+      "username": "vel",
+      "password": "Admin@123",
+      "role": "Admin",
+      "name": " velavan",
+      "email": " mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "seed"
+    },
+    {
+      "id": 14,
+      "username": "CAP",
       "password": "12345",
-      "role": "Student",
-      "name": "shankar",
-      "email": "yuganmurugan26@gmail.com",
+      "role": "Faculty",
+      "name": "CAPTAIN",
+      "email": "mvelavan86@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
     },
@@ -111,11 +111,31 @@
       "createdVia": "seed"
     },
     {
+      "id": 10,
+      "username": "sh",
+      "password": "12345",
+      "role": "Student",
+      "name": "shankar",
+      "email": "yuganmurugan26@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
       "id": 12,
       "username": "iron man",
       "password": "12345",
       "role": "Faculty",
       "name": "TONY STARK",
+      "email": "mvelavan86@gmail.com",
+      "status": "Active",
+      "createdVia": "self-registration"
+    },
+    {
+      "id": 13,
+      "username": "lokesh",
+      "password": "12345",
+      "role": "Faculty",
+      "name": "MASTER",
       "email": "mvelavan86@gmail.com",
       "status": "Active",
       "createdVia": "self-registration"
@@ -187,9 +207,515 @@
       ],
       "requireTrustedDevice": true,
       "requireMFA": true
+    },
+    {
+      "id": 1789474625612,
+      "name": "Attendance Records",
+      "sensitivity": "Low",
+      "roles": [
+        "Admin",
+        "Faculty"
+      ],
+      "requireTrustedDevice": false,
+      "requireMFA": false
     }
   ],
   "logs": [
+    {
+      "id": 84,
+      "time": "16/9/2026, 5:29:45 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Student Records Database",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.45.44"
+    },
+    {
+      "id": 83,
+      "time": "16/9/2026, 5:27:46 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.98.41"
+    },
+    {
+      "id": 82,
+      "time": "16/9/2026, 5:27:31 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.140.20"
+    },
+    {
+      "id": 81,
+      "time": "16/9/2026, 5:27:13 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.117.150"
+    },
+    {
+      "id": 80,
+      "time": "16/9/2026, 5:26:43 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.81.115"
+    },
+    {
+      "id": 79,
+      "time": "16/9/2026, 5:24:22 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Student Records Database",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.207.195"
+    },
+    {
+      "id": 78,
+      "time": "16/9/2026, 5:23:55 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Student Records Database",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.50.235"
+    },
+    {
+      "id": 77,
+      "time": "16/9/2026, 5:23:21 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Grade Management System",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.24.49"
+    },
+    {
+      "id": 76,
+      "time": "16/9/2026, 5:21:16 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.154.9"
+    },
+    {
+      "id": 75,
+      "time": "16/9/2026, 5:20:52 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.33.42"
+    },
+    {
+      "id": 74,
+      "time": "16/9/2026, 5:12:21 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.153.105"
+    },
+    {
+      "id": 73,
+      "time": "16/9/2026, 5:12:12 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.194.134"
+    },
+    {
+      "id": 72,
+      "time": "16/9/2026, 5:06:12 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.99.187"
+    },
+    {
+      "id": 71,
+      "time": "16/9/2026, 5:02:35 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.108.205"
+    },
+    {
+      "id": 70,
+      "time": "16/9/2026, 5:02:24 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.185.165"
+    },
+    {
+      "id": 69,
+      "time": "16/9/2026, 4:51:00 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.157.239"
+    },
+    {
+      "id": 68,
+      "time": "16/9/2026, 4:50:59 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Grade Management System",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.214.148"
+    },
+    {
+      "id": 67,
+      "time": "16/9/2026, 4:49:16 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.46.33"
+    },
+    {
+      "id": 66,
+      "time": "16/9/2026, 4:49:14 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Attendance Records",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.211.182"
+    },
+    {
+      "id": 65,
+      "time": "16/9/2026, 4:48:55 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.40.152"
+    },
+    {
+      "id": 64,
+      "time": "16/9/2026, 4:40:37 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Self-service access",
+      "device": "Trusted",
+      "ip": "10.20.118.59"
+    },
+    {
+      "id": 63,
+      "time": "16/9/2026, 4:39:14 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Self-service access",
+      "device": "Trusted",
+      "ip": "10.20.148.166"
+    },
+    {
+      "id": 62,
+      "time": "16/9/2026, 4:38:50 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Self-service access",
+      "device": "Trusted",
+      "ip": "10.20.169.182"
+    },
+    {
+      "id": 61,
+      "time": "16/9/2026, 4:38:32 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: HR Records",
+      "result": "denied",
+      "detail": "Role \"Faculty\" is not permitted for this resource. Only Admin may access it.",
+      "device": "Trusted",
+      "ip": "10.20.10.8"
+    },
+    {
+      "id": 60,
+      "time": "16/9/2026, 4:38:17 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Viewed academic profile",
+      "result": "granted",
+      "detail": "Self-service access to own record",
+      "device": "Trusted",
+      "ip": "10.20.27.123"
+    },
+    {
+      "id": 59,
+      "time": "16/9/2026, 4:37:02 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Grade Management System",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.117.182"
+    },
+    {
+      "id": 58,
+      "time": "16/9/2026, 4:36:48 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Student Records Database",
+      "result": "granted",
+      "detail": "Viewed by Faculty",
+      "device": "Trusted",
+      "ip": "10.20.117.199"
+    },
+    {
+      "id": 57,
+      "time": "16/9/2026, 4:36:46 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Student Records Database",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.25.165"
+    },
+    {
+      "id": 56,
+      "time": "16/9/2026, 4:36:35 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Viewed academic profile",
+      "result": "granted",
+      "detail": "Self-service access to own record",
+      "device": "Trusted",
+      "ip": "10.20.214.219"
+    },
+    {
+      "id": 55,
+      "time": "16/9/2026, 4:36:33 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: My Academic Profile",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.106.114"
+    },
+    {
+      "id": 54,
+      "time": "16/9/2026, 4:36:10 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Attendance Records",
+      "result": "granted",
+      "detail": "Self-service access",
+      "device": "Trusted",
+      "ip": "10.20.115.235"
+    },
+    {
+      "id": 53,
+      "time": "16/9/2026, 4:35:26 am",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.93.167"
+    },
+    {
+      "id": 52,
+      "time": "15/9/2026, 6:11:07 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Access request: Attendance Records",
+      "result": "denied",
+      "detail": "Role \"Student\" is not permitted for this resource. Only Admin, Faculty may access it.",
+      "device": "Trusted",
+      "ip": "10.20.77.128"
+    },
+    {
+      "id": 51,
+      "time": "15/9/2026, 5:59:56 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Access request: My Academic Profile",
+      "result": "granted",
+      "detail": "Access scoped to your own records only.",
+      "device": "Trusted",
+      "ip": "10.20.161.176"
+    },
+    {
+      "id": 50,
+      "time": "15/9/2026, 5:59:50 pm",
+      "user": "kichaa",
+      "role": "Student",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.141.224"
+    },
+    {
+      "id": 49,
+      "time": "15/9/2026, 5:58:54 pm",
+      "user": "CAP",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.130.129"
+    },
+    {
+      "id": 48,
+      "time": "15/9/2026, 5:58:09 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.129.206"
+    },
+    {
+      "id": 47,
+      "time": "15/9/2026, 5:49:00 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Attendance Records",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.131.155"
+    },
+    {
+      "id": 46,
+      "time": "15/9/2026, 5:48:43 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.76.85"
+    },
+    {
+      "id": 45,
+      "time": "15/9/2026, 5:47:56 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Attendance Records",
+      "result": "denied",
+      "detail": "Role \"Faculty\" is not permitted for this resource. Only Admin may access it.",
+      "device": "Trusted",
+      "ip": "10.20.191.38"
+    },
+    {
+      "id": 44,
+      "time": "15/9/2026, 5:47:47 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.153.126"
+    },
+    {
+      "id": 43,
+      "time": "15/9/2026, 5:45:02 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Grade Management System",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.143.176"
+    },
+    {
+      "id": 42,
+      "time": "15/9/2026, 5:44:47 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Opened Library Portal",
+      "result": "granted",
+      "detail": "Self-service access",
+      "device": "Trusted",
+      "ip": "10.20.71.104"
+    },
+    {
+      "id": 41,
+      "time": "15/9/2026, 5:44:46 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Access request: Library Portal",
+      "result": "granted",
+      "detail": "Role \"Faculty\" satisfies policy for this resource.",
+      "device": "Trusted",
+      "ip": "10.20.90.81"
+    },
+    {
+      "id": 40,
+      "time": "15/9/2026, 5:44:30 pm",
+      "user": "madam",
+      "role": "Faculty",
+      "action": "Login",
+      "result": "granted",
+      "detail": "MFA verified · trusted device",
+      "device": "Trusted",
+      "ip": "10.20.245.148"
+    },
     {
       "id": 39,
       "time": "14/9/2026, 4:47:11 pm",
@@ -622,6 +1148,13 @@
   ],
   "alerts": [
     {
+      "id": 6,
+      "time": "16/9/2026, 4:38:32 am",
+      "severity": "High",
+      "title": "Denied access attempt — HR Records",
+      "detail": "mangai mam (Faculty) was denied per policy: Role \"Faculty\" is not permitted for this resource. Only Admin may access it."
+    },
+    {
       "id": 5,
       "time": "14/9/2026, 4:31:56 pm",
       "severity": "Medium",
@@ -658,6 +1191,162 @@
     }
   ],
   "accessRequests": [
+    {
+      "id": 16,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 2,
+      "resourceName": "Grade Management System",
+      "time": "16/9/2026, 5:23:21 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 15,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 2,
+      "resourceName": "Grade Management System",
+      "time": "16/9/2026, 4:50:59 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 14,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 1789474625612,
+      "resourceName": "Attendance Records",
+      "time": "16/9/2026, 4:49:14 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 13,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 6,
+      "resourceName": "HR Records",
+      "time": "16/9/2026, 4:38:32 am",
+      "automatedResult": "denied",
+      "reason": "Role \"Faculty\" is not permitted for this resource. Only Admin may access it.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 12,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 1,
+      "resourceName": "Student Records Database",
+      "time": "16/9/2026, 4:36:46 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 11,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 3,
+      "resourceName": "My Academic Profile",
+      "time": "16/9/2026, 4:36:33 am",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 10,
+      "user": "kichaa",
+      "userName": "SOMA",
+      "role": "Student",
+      "resourceId": 1789474625612,
+      "resourceName": "Attendance Records",
+      "time": "15/9/2026, 6:11:07 pm",
+      "automatedResult": "denied",
+      "reason": "Role \"Student\" is not permitted for this resource. Only Admin, Faculty may access it.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 9,
+      "user": "kichaa",
+      "userName": "SOMA",
+      "role": "Student",
+      "resourceId": 3,
+      "resourceName": "My Academic Profile",
+      "time": "15/9/2026, 5:59:56 pm",
+      "automatedResult": "granted",
+      "reason": "Access scoped to your own records only.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 8,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 1789474625612,
+      "resourceName": "Attendance Records",
+      "time": "15/9/2026, 5:49:00 pm",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 7,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 1789474625612,
+      "resourceName": "Attendance Records",
+      "time": "15/9/2026, 5:47:56 pm",
+      "automatedResult": "denied",
+      "reason": "Role \"Faculty\" is not permitted for this resource. Only Admin may access it.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 6,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 2,
+      "resourceName": "Grade Management System",
+      "time": "15/9/2026, 5:45:02 pm",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
+    {
+      "id": 5,
+      "user": "madam",
+      "userName": "mangai mam",
+      "role": "Faculty",
+      "resourceId": 4,
+      "resourceName": "Library Portal",
+      "time": "15/9/2026, 5:44:46 pm",
+      "automatedResult": "granted",
+      "reason": "Role \"Faculty\" satisfies policy for this resource.",
+      "manualReview": false,
+      "manualStatus": null
+    },
     {
       "id": 4,
       "user": "madam",
@@ -800,10 +1489,18 @@
       "cgpa": "—",
       "attendance": "—",
       "courses": []
+    },
+    "madam": {
+      "rollNo": "STU95739",
+      "program": "General Studies",
+      "semester": "1st",
+      "cgpa": "—",
+      "attendance": "—",
+      "courses": []
     }
   },
   "nextUserId": 10,
-  "nextLogId": 40,
-  "nextReqId": 5,
-  "nextAlertId": 6
+  "nextLogId": 85,
+  "nextReqId": 17,
+  "nextAlertId": 7
 }
