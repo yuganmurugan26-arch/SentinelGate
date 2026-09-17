@@ -361,26 +361,32 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       } catch (e) { /* no profile set yet — leave as — */ }
 
       const { enrollments } = await apiGet(`/api/enrollments/student/${s.id}`);
-      const courseNames = enrollments.length ? enrollments.map(e => e.course.name).join(', ') : '—';
+      // Everything below is scoped to courses tagged with the SELECTED semester only —
+      // Course, SGPA, and Attendance all change together when the dropdown changes.
+      const semesterEnrollments = enrollments.filter(e =>
+        semesterCourses.some(c => c.id === e.course.id)
+      );
+      const courseNames = semesterEnrollments.length
+        ? semesterEnrollments.map(e => e.course.name).join(', ')
+        : '—';
 
       let totalMarks = 0, totalMax = 0;
-      for (const e of enrollments) {
+      for (const e of semesterEnrollments) {
         const g = await apiGet(`/api/grades/student/${s.id}/course/${e.course.id}`);
         totalMarks += g.totalMarks;
         totalMax += g.totalMax;
       }
-      const cgpa = totalMax ? (((totalMarks / totalMax) * 100) / 9.5).toFixed(2) : '—';
+      const sgpa = totalMax ? (((totalMarks / totalMax) * 100) / 9.5).toFixed(2) : '—';
 
       let presentSum = 0, totalSum = 0;
-      for (const course of semesterCourses) {
-        if (!enrollments.some(e => e.course.id === course.id)) continue;
-        const att = await apiGet(`/api/attendance/student/${s.id}/course/${course.id}`);
+      for (const e of semesterEnrollments) {
+        const att = await apiGet(`/api/attendance/student/${s.id}/course/${e.course.id}`);
         presentSum += att.present + att.late * 0.5;
         totalSum += att.total;
       }
       const attendancePct = totalSum ? Math.round((presentSum / totalSum) * 1000) / 10 + '%' : '—';
 
-      return { student: s, rollNo, courseNames, cgpa, attendancePct };
+      return { student: s, rollNo, courseNames, sgpa, attendancePct };
     }));
 
     const semesterOptionsHtml = SEMESTER_OPTIONS
@@ -393,7 +399,7 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
         <td class="strong">${esc(r.student.name)}</td>
         <td class="profile-view-rollno">${esc(r.rollNo)}</td>
         <td>${esc(r.courseNames)}</td>
-        <td>${r.cgpa}</td>
+        <td>${r.sgpa}</td>
         <td>${r.attendancePct}</td>
       </tr>`;
     }).join('');
@@ -402,12 +408,12 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
       <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">${students.length} student record(s) — visible to Admin &amp; Faculty only.${isFaculty ? ' Right-click a row to edit or clear their roll no.' : ''}</p>
       <div class="field" style="max-width:220px;margin-bottom:12px;">
-        <label>Attendance for</label>
+        <label>Showing</label>
         <select id="src-semester-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), this.value)">
           ${semesterOptionsHtml}
         </select>
       </div>
-      <table><thead><tr><th>Name</th><th>Roll No.</th><th>Course</th><th>CGPA</th><th>Attendance</th></tr></thead>
+      <table><thead><tr><th>Name</th><th>Roll No.</th><th>Course</th><th>SGPA</th><th>Attendance</th></tr></thead>
       <tbody>${rowsHtml || '<tr><td colspan="5" style="color:var(--text-faint);">No student accounts yet.</td></tr>'}</tbody>
       </table>`;
   } catch (err) {
