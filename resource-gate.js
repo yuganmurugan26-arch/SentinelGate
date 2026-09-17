@@ -354,14 +354,14 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
     const isFaculty = session.user.role === 'Faculty';
 
     const rows = await Promise.all(students.map(async (s) => {
-      let rollNo = '—', program = '—';
+      let rollNo = '—';
       try {
         const p = await apiGet(`/api/profile/${s.id}`);
         rollNo = p.rollNo || '—';
-        program = p.program || '—';
       } catch (e) { /* no profile set yet — leave as — */ }
 
       const { enrollments } = await apiGet(`/api/enrollments/student/${s.id}`);
+      const courseNames = enrollments.length ? enrollments.map(e => e.course.name).join(', ') : '—';
 
       let totalMarks = 0, totalMax = 0;
       for (const e of enrollments) {
@@ -380,7 +380,7 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       }
       const attendancePct = totalSum ? Math.round((presentSum / totalSum) * 1000) / 10 + '%' : '—';
 
-      return { student: s, rollNo, program, cgpa, attendancePct };
+      return { student: s, rollNo, courseNames, cgpa, attendancePct };
     }));
 
     const semesterOptionsHtml = SEMESTER_OPTIONS
@@ -392,7 +392,7 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       return `<tr data-student-id="${r.student.id}" ${contextAttr} style="${isFaculty ? 'cursor:context-menu;' : ''}">
         <td class="strong">${esc(r.student.name)}</td>
         <td class="profile-view-rollno">${esc(r.rollNo)}</td>
-        <td class="profile-view-program">${esc(r.program)}</td>
+        <td>${esc(r.courseNames)}</td>
         <td>${r.cgpa}</td>
         <td>${r.attendancePct}</td>
       </tr>`;
@@ -400,14 +400,14 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
 
     box.innerHTML = `
       <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
-      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">${students.length} student record(s) — visible to Admin &amp; Faculty only.${isFaculty ? ' Right-click a row to edit or clear roll no / program.' : ''}</p>
+      <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">${students.length} student record(s) — visible to Admin &amp; Faculty only.${isFaculty ? ' Right-click a row to edit or clear their roll no.' : ''}</p>
       <div class="field" style="max-width:220px;margin-bottom:12px;">
         <label>Attendance for</label>
         <select id="src-semester-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), this.value)">
           ${semesterOptionsHtml}
         </select>
       </div>
-      <table><thead><tr><th>Name</th><th>Roll No.</th><th>Program</th><th>CGPA</th><th>Attendance</th></tr></thead>
+      <table><thead><tr><th>Name</th><th>Roll No.</th><th>Course</th><th>CGPA</th><th>Attendance</th></tr></thead>
       <tbody>${rowsHtml || '<tr><td colspan="5" style="color:var(--text-faint);">No student accounts yet.</td></tr>'}</tbody>
       </table>`;
   } catch (err) {
@@ -439,11 +439,8 @@ function showProfileContextMenu(event, studentId) {
 function startEditProfile(studentId) {
   const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
   const rollTd = row.querySelector('.profile-view-rollno');
-  const progTd = row.querySelector('.profile-view-program');
   const currentRoll = rollTd.textContent.trim();
-  const currentProgram = progTd.textContent.trim();
-  rollTd.innerHTML = `<input type="text" class="profile-edit-rollno" value="${currentRoll === '—' ? '' : esc(currentRoll)}" style="width:100px;">`;
-  progTd.innerHTML = `<input type="text" class="profile-edit-program" value="${currentProgram === '—' ? '' : esc(currentProgram)}" style="width:140px;">
+  rollTd.innerHTML = `<input type="text" class="profile-edit-rollno" value="${currentRoll === '—' ? '' : esc(currentRoll)}" style="width:100px;">
     <button class="btn small" onclick="saveProfileEdit('${studentId}')">Save</button>
     <button class="btn small secondary" onclick="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), document.getElementById('src-semester-select').value)">Cancel</button>`;
 }
@@ -451,16 +448,15 @@ function startEditProfile(studentId) {
 async function saveProfileEdit(studentId) {
   const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
   const rollNo = row.querySelector('.profile-edit-rollno').value.trim();
-  const program = row.querySelector('.profile-edit-program').value.trim();
   try {
     const res = await fetch(`${BACKEND_URL}/api/profile/${studentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rollNo, program, requesterRole: session.user.role }),
+      body: JSON.stringify({ rollNo, requesterRole: session.user.role }),
     });
     const data = await res.json();
     if (!res.ok || data.success === false) throw new Error(data.error || 'Update failed');
-    toast('Profile updated', '', 'success');
+    toast('Roll number updated', '', 'success');
     loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
   } catch (err) {
     toast('Failed to update', err.message, 'error');
@@ -468,7 +464,7 @@ async function saveProfileEdit(studentId) {
 }
 
 async function deleteProfile(studentId) {
-  if (!confirm("Clear this student's roll number and program back to blank?")) return;
+  if (!confirm("Clear this student's roll number back to blank?")) return;
   try {
     const res = await fetch(`${BACKEND_URL}/api/profile/${studentId}`, {
       method: 'DELETE',
@@ -477,7 +473,7 @@ async function deleteProfile(studentId) {
     });
     const data = await res.json();
     if (!res.ok || data.success === false) throw new Error(data.error || 'Delete failed');
-    toast('Profile cleared', '', 'success');
+    toast('Roll number cleared', '', 'success');
     loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
   } catch (err) {
     toast('Failed to clear', err.message, 'error');
