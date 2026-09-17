@@ -342,18 +342,20 @@ function showStudentRecordsResource(resource) {
     <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
     <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">Loading student records…</p>`;
   document.getElementById('academic-modal').classList.remove('hidden');
-  loadStudentRecordsResourceData(resource, SEMESTER_OPTIONS[0]);
+  loadStudentRecordsResourceData(resource, SEMESTER_OPTIONS[0], 'all');
 }
 
-async function loadStudentRecordsResourceData(resource, selectedSemester) {
+async function loadStudentRecordsResourceData(resource, selectedSemester, selectedCourseId) {
+  selectedCourseId = selectedCourseId || 'all';
   const box = document.getElementById('academic-modal-content');
   try {
     const students = DB.users.filter(u => u.role === 'Student');
     const { courses: allCourses } = await apiGet('/api/courses');
     const semesterCourses = allCourses.filter(c => c.semester === selectedSemester);
     const isFaculty = session.user.role === 'Faculty';
+    const filteringToOneCourse = selectedCourseId !== 'all';
 
-    const rows = await Promise.all(students.map(async (s) => {
+    const perStudent = await Promise.all(students.map(async (s) => {
       let rollNo = '—';
       try {
         const p = await apiGet(`/api/profile/${s.id}`);
@@ -361,14 +363,15 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       } catch (e) { /* no profile set yet — leave as — */ }
 
       const { enrollments } = await apiGet(`/api/enrollments/student/${s.id}`);
-      // Everything below is scoped to courses tagged with the SELECTED semester only —
-      // Course, SGPA, and Attendance all change together when the dropdown changes.
-      const semesterEnrollments = enrollments.filter(e =>
-        semesterCourses.some(c => c.id === e.course.id)
-      );
-      const courseNames = semesterEnrollments.length
-        ? semesterEnrollments.map(e => e.course.name).join(', ')
-        : '—';
+      let semesterEnrollments = enrollments.filter(e => semesterCourses.some(c => c.id === e.course.id));
+      if (filteringToOneCourse) {
+        semesterEnrollments = semesterEnrollments.filter(e => String(e.course.id) === String(selectedCourseId));
+      }
+
+      // When a specific course is picked, a student not enrolled in it shouldn't appear at all.
+      if (filteringToOneCourse && !semesterEnrollments.length) return null;
+
+      const courseNames = semesterEnrollments.length ? semesterEnrollments.map(e => e.course.name).join(', ') : '—';
 
       let totalMarks = 0, totalMax = 0;
       for (const e of semesterEnrollments) {
@@ -389,9 +392,16 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
       return { student: s, rollNo, courseNames, sgpa, attendancePct };
     }));
 
+    const rows = perStudent.filter(Boolean); // drop nulls (students excluded by the course filter)
+
     const semesterOptionsHtml = SEMESTER_OPTIONS
       .map(sOpt => `<option value="${sOpt}" ${sOpt === selectedSemester ? 'selected' : ''}>${sOpt}</option>`)
       .join('');
+
+    const courseOptionsHtml = ['<option value="all">All courses</option>']
+      .concat(semesterCourses.map(c =>
+        `<option value="${c.id}" ${String(c.id) === String(selectedCourseId) ? 'selected' : ''}>${esc(c.name)} (${esc(c.code)})</option>`
+      )).join('');
 
     const rowsHtml = rows.map(r => {
       const contextAttr = isFaculty ? `oncontextmenu="showProfileContextMenu(event, '${r.student.id}')"` : '';
@@ -407,14 +417,22 @@ async function loadStudentRecordsResourceData(resource, selectedSemester) {
     box.innerHTML = `
       <h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
       <p style="color:var(--text-faint);font-size:12.5px;margin:0 0 16px 0;">${students.length} student record(s) — visible to Admin &amp; Faculty only.${isFaculty ? ' Right-click a row to edit or clear their roll no.' : ''}</p>
-      <div class="field" style="max-width:220px;margin-bottom:12px;">
-        <label>Showing</label>
-        <select id="src-semester-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), this.value)">
-          ${semesterOptionsHtml}
-        </select>
+      <div class="grid grid-2" style="max-width:460px;margin-bottom:12px;">
+        <div class="field">
+          <label>Semester</label>
+          <select id="src-semester-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), this.value, 'all')">
+            ${semesterOptionsHtml}
+          </select>
+        </div>
+        <div class="field">
+          <label>Course</label>
+          <select id="src-course-select" onchange="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), document.getElementById('src-semester-select').value, this.value)">
+            ${courseOptionsHtml}
+          </select>
+        </div>
       </div>
       <table><thead><tr><th>Name</th><th>Roll No.</th><th>Course</th><th>SGPA</th><th>Attendance</th></tr></thead>
-      <tbody>${rowsHtml || '<tr><td colspan="5" style="color:var(--text-faint);">No student accounts yet.</td></tr>'}</tbody>
+      <tbody>${rowsHtml || `<tr><td colspan="5" style="color:var(--text-faint);">${filteringToOneCourse ? 'No students enrolled in this course yet.' : 'No student accounts yet.'}</td></tr>`}</tbody>
       </table>`;
   } catch (err) {
     box.innerHTML = `<h2 style="font-family:var(--font-display);margin:0 0 4px 0;">${esc(resource.name)}</h2>
@@ -448,7 +466,7 @@ function startEditProfile(studentId) {
   const currentRoll = rollTd.textContent.trim();
   rollTd.innerHTML = `<input type="text" class="profile-edit-rollno" value="${currentRoll === '—' ? '' : esc(currentRoll)}" style="width:100px;">
     <button class="btn small" onclick="saveProfileEdit('${studentId}')">Save</button>
-    <button class="btn small secondary" onclick="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), document.getElementById('src-semester-select').value)">Cancel</button>`;
+    <button class="btn small secondary" onclick="loadStudentRecordsResourceData(DB.resources.find(x=>x.name==='Student Records Database'), document.getElementById('src-semester-select').value, document.getElementById('src-course-select').value)">Cancel</button>`;
 }
 
 async function saveProfileEdit(studentId) {
@@ -463,7 +481,7 @@ async function saveProfileEdit(studentId) {
     const data = await res.json();
     if (!res.ok || data.success === false) throw new Error(data.error || 'Update failed');
     toast('Roll number updated', '', 'success');
-    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
+    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value, document.getElementById('src-course-select').value);
   } catch (err) {
     toast('Failed to update', err.message, 'error');
   }
@@ -480,7 +498,7 @@ async function deleteProfile(studentId) {
     const data = await res.json();
     if (!res.ok || data.success === false) throw new Error(data.error || 'Delete failed');
     toast('Roll number cleared', '', 'success');
-    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value);
+    loadStudentRecordsResourceData(DB.resources.find(x => x.name === 'Student Records Database'), document.getElementById('src-semester-select').value, document.getElementById('src-course-select').value);
   } catch (err) {
     toast('Failed to clear', err.message, 'error');
   }
