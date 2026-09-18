@@ -126,10 +126,15 @@ async function renderFacultyGrades() {
     return `<div class="page-head"><h2>Grades</h2><p>No courses are assigned to you yet.</p></div>`;
   }
 
-  const courseOptions = courses.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.code)})</option>`).join('');
+  // data-semester carries each course's real semester (from the courses table)
+  // onto its <option>, so selecting a course can auto-fill the exam field below
+  // without another network round-trip.
+  const courseOptions = courses
+    .map(c => `<option value="${c.id}" data-semester="${esc(c.semester || '')}">${esc(c.name)} (${esc(c.code)})</option>`)
+    .join('');
 
   return `
-    <div class="page-head"><h2>Enter Grades</h2><p>Select a course and an exam name, then enter marks per student.</p></div>
+    <div class="page-head"><h2>Enter Grades</h2><p>Select a course — the semester is loaded automatically from the course record so it can't be entered wrong.</p></div>
     <div class="card" style="margin-bottom:16px;">
       <div class="grid grid-3" style="align-items:end;">
         <div class="field">
@@ -137,20 +142,34 @@ async function renderFacultyGrades() {
           <select id="grades-course-select">${courseOptions}</select>
         </div>
         <div class="field">
-          <label>Exam name</label>
-          <input id="grades-examtype-input" placeholder="e.g. Semester I" list="exam-type-suggestions">
-          <datalist id="exam-type-suggestions">
-            <option value="Semester I"><option value="Semester II"><option value="Semester III"><option value="Semester IV"><option value="Semester V"><option value="Final Semester">
-          </datalist>
+          <label>Semester</label>
+          <input id="grades-examtype-input" readonly>
         </div>
         <button class="btn" id="grades-load-btn">Load students</button>
       </div>
+      <p class="card-sub" style="margin-top:8px;">Semester is auto-loaded from the course record and cannot be edited here.</p>
     </div>
     <div id="grades-students-container"></div>
   `;
 }
 
 function wireFacultyGradesEvents() {
+  const courseSelect = document.getElementById('grades-course-select');
+  const examInput = document.getElementById('grades-examtype-input');
+
+  function syncSemesterFromCourse() {
+    if (!courseSelect || !examInput) return;
+    const opt = courseSelect.options[courseSelect.selectedIndex];
+    const sem = opt ? (opt.dataset.semester || '') : '';
+    examInput.value = sem;
+    examInput.placeholder = sem ? '' : 'No semester set on this course — contact Admin';
+  }
+
+  if (courseSelect) {
+    courseSelect.onchange = syncSemesterFromCourse;
+    syncSemesterFromCourse(); // fill immediately for the pre-selected first course
+  }
+
   const btn = document.getElementById('grades-load-btn');
   if (btn) btn.onclick = loadStudentsForGrades; // button won't exist if this faculty has no courses assigned
 }
@@ -161,7 +180,7 @@ async function loadStudentsForGrades() {
   const container = document.getElementById('grades-students-container');
 
   if (!examType) {
-    container.innerHTML = '<p style="color:var(--danger)">Enter an exam name first.</p>';
+    container.innerHTML = '<p style="color:var(--danger)">This course has no semester set in its course record — ask an Admin to set one before entering grades.</p>';
     return;
   }
   container.innerHTML = '<p class="card-sub">Loading students…</p>';
